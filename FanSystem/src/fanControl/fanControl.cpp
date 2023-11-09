@@ -47,12 +47,12 @@ void initPWMfans(){
 }
 
 //Update the speed of fans 
-void changeFanSpeed(int newPwmValue, int fanNumber){
+void changeFanSpeed(uint8_t newPwmValue, bool fanNumber){
     if(fanNumber == 1){
         ledcWrite(1, newPwmValue);
         pwmV1 = newPwmValue;
     }
-    if(fanNumber == 2){
+    if(fanNumber == 0){
         ledcWrite(2, newPwmValue);
         pwmV2 = newPwmValue;
     }
@@ -102,10 +102,10 @@ float getRotation2(){
     return rpm2;
 }
 //return the pwm variables for the outside fan
-int getPwm1(){
+uint8_t getPwm1(){
     return pwmV1;
 }
 //return the pwm variables for the inside fan
-int getPwm2(){
+uint8_t getPwm2(){
     return pwmV2;
 }

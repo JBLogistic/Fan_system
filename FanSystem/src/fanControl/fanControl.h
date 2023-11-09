@@ -38,24 +38,24 @@
 static float rpm1 = 0.0;
 static float rpm2 = 0.0;
 //Coutns how many rotations did the fan motor made in a period of time
-static int rotationCounter1 = 0;
+static uint16_t rotationCounter1 = 0;
 //Coutns how many rotations did the fan motor made in a period of time
 static int rotationCounter2 = 0;
 // setting PWM properties
-static volatile int pwmV1 = 0;
-static volatile int pwmV2 = 0;
+static volatile uint8_t pwmV1 = 0;
+static volatile uint8_t pwmV2 = 0;
 //Stores the previous time when  measuring happend
 static unsigned long millisecondsLastFanMeasurement = 0;
 /* Exported functions prototypes */
 /*============================================================================*/
 void initPWMfans();
-void changeFanSpeed(int newPwmValue, int fanNumber);
+void changeFanSpeed(uint8_t newPwmValue, bool fanNumber);
 void updateRPM();
 static void rotation1();
 static void rotation2();
 float getRotation1();
 float getRotation2();
-int getPwm1();
-int getPwm2();
+uint8_t getPwm1();
+uint8_t getPwm2();
 
-#endif FANCONTROL_H
+#endif

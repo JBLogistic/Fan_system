@@ -4,7 +4,7 @@ extern "C" {
   #include "freertos/timers.h"
 }
 #include <AsyncMqttClient.h>
-
+#include "fanControl/fanControl.h"
 #define WIFI_SSID "CoPlace"
 #define WIFI_PASSWORD "coplace1"
 
@@ -21,4 +21,7 @@ extern "C" {
 #define MQTT_PUB_FAN_IN "Fan/speed/in"
 #define MQTT_PUB_SPEED "Fan/speed/set"
 #define MQTT_PUB_ON "Fan/state"
-
+//bool variable for the outside fan
+#define fan1 1
+//bool variable for the inside fan
+#define fan2 0
