@@ -24,7 +24,6 @@
 #define PERIOD1 5000
 #define DURATION 100000
 #define PERIOD2 10000
-const uint16_t interval = 60000;        // Interval at which to publish sensor readings
 
 /* Variables */
 /*============================================================================*/
@@ -34,8 +33,7 @@ TimerHandle_t wifiReconnectTimer;
 
 Scheduler ts;
 
-unsigned long previousMillis = 0;   // Stores last time temperature was published
-
+bool system_online = false;
 /* Exported functions */
 /*============================================================================*/
 
@@ -44,6 +42,8 @@ Task Task1( PERIOD1 * TASK_MILLISECOND, DURATION / PERIOD1, &task1, &ts, true );
 
 void task2();
 Task Task2( PERIOD2 * TASK_MILLISECOND, DURATION / PERIOD2, &task2, &ts, true );
+
+
 // Function to connect to Wi-Fi using predefined credentials.
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
@@ -95,72 +95,81 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     // Here the message is checked if the first 3 or 4 characters are as follows
     // ther first two indicate the desired fan, the second 2 or 3 are the speed percentage
     if(strncmp(payload,"0110",4)==0){
-      changeFanSpeed(10,fan1);
+      changeFanSpeed(230,fan1);
     }
     if(strncmp(payload,"0120",4)==0){
-      changeFanSpeed(30,fan1);
+      changeFanSpeed(200,fan1);
     }
     if(strncmp(payload,"0130",4)==0){
-      changeFanSpeed(50,fan1);
+      changeFanSpeed(180,fan1);
     }
     if(strncmp(payload,"0140",4)==0){
-      changeFanSpeed(80,fan1);
+      changeFanSpeed(130,fan1);
     }
     if(strncmp(payload,"0150",4)==0){
       changeFanSpeed(100,fan1);
     }
     if(strncmp(payload,"0160",4)==0){
-      changeFanSpeed(130,fan1);
+      changeFanSpeed(80,fan1);
     }
     if(strncmp(payload,"0170",4)==0){
-      changeFanSpeed(180,fan1);
+      changeFanSpeed(50,fan1);
     }
     if(strncmp(payload,"0180",4)==0){
-      changeFanSpeed(200,fan1);
+      changeFanSpeed(30,fan1);
     }
     if(strncmp(payload,"0190",4)==0){
-      changeFanSpeed(230,fan1);
+      changeFanSpeed(10,fan1);
     }
     if(strncmp(payload,"01100",5)==0){
-      changeFanSpeed(255,fan1);
-    }
-    if(strncmp(payload,"010",3)==0){
       changeFanSpeed(0,fan1);
     }
+    if(strncmp(payload,"010",3)==0){
+      changeFanSpeed(255,fan1);
+    }
     if(strncmp(payload,"1010",4)==0){
-      changeFanSpeed(10,fan2);
+      changeFanSpeed(230,fan2);
     }
     if(strncmp(payload,"1020",4)==0){
-      changeFanSpeed(30,fan2);
+      changeFanSpeed(200,fan2);
     }
     if(strncmp(payload,"1030",4)==0){
-      changeFanSpeed(50,fan2);
+      changeFanSpeed(180,fan2);
     }
     if(strncmp(payload,"1040",4)==0){
-      changeFanSpeed(80,fan2);
+      changeFanSpeed(130,fan2);
     }
     if(strncmp(payload,"1050",4)==0){
       changeFanSpeed(100,fan2);
     }
     if(strncmp(payload,"1060",4)==0){
-      changeFanSpeed(130,fan2);
+      changeFanSpeed(80,fan2);
     }
     if(strncmp(payload,"1070",4)==0){
-      changeFanSpeed(180,fan2);
+      changeFanSpeed(50,fan2);
     }
     if(strncmp(payload,"1080",4)==0){
-      changeFanSpeed(200,fan2);
+      changeFanSpeed(30,fan2);
     }
     if(strncmp(payload,"1090",4)==0){
-      changeFanSpeed(230,fan2);
+      changeFanSpeed(10,fan2);
     }
     if(strncmp(payload,"10100",4)==0){
-      changeFanSpeed(255,fan2);
-    }
-    if(strncmp(payload,"100",3)==0){
       changeFanSpeed(0,fan2);
     }
+    if(strncmp(payload,"100",3)==0){
+      changeFanSpeed(255,fan2);
+    }
   }
+  else 
+    if(strcmp(topic , MQTT_SYSTEM)){
+      if(strncmp(payload,"online",6)==0){
+        system_online = true;
+      }
+      if(strncmp(payload,"offlin",6)==0){
+        system_online = false;
+      }
+    }
 }
 // Callback function when MQTT client unsubscribes from a topic.
 void onMqttUnsubscribe(uint16_t packetId) {
@@ -209,19 +218,22 @@ void setup() {
 }
 
 void loop() {
+  //mqttClient.subscribe(MQTT_PUB_ON,1);
   mqttClient.subscribe(MQTT_PUB_SPEED,1);
   ts.execute();
-}
+  }
 void task1(){
   updateRPM();
-  Serial.println("asd1");
+  //Serial.println("asd1");
 }
 void task2(){
-  Serial.println("asd2");
-  sensors.requestTemperatures(); 
+ // Serial.println("asd2");
+  
+    Serial.println("asd");
+    sensors.requestTemperatures(); 
     // Temperature in Celsius degrees
-  temp = sensors.getTempCByIndex(0);
-  uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, false, String(temp).c_str());                            
+    temp = sensors.getTempCByIndex(0);
+    uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, false, String(temp).c_str());                            
     /*Serial.printf("Publishing on topic %s at QoS 1, packetId: ", MQTT_PUB_TEMP);
     Serial.println(packetIdPub1);
     Serial.printf("Message: %.2f /n", sensors.getTempCByIndex(0));*/
